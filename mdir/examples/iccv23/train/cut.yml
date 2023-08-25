@@ -1,0 +1,12 @@
+#
+# Tuned variant of CUT (Contrastive Unpaired Translation) from eccv20
+#
+
+__template__: _train.yml
+
+train:
+  1_train_augment: &train_augment
+    __template__: ../parameters/train_cut.yml
+
+all:
+  1_train_augment: *train_augment

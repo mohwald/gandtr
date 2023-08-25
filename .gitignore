@@ -1,0 +1,10 @@
+__pycache__/
+.env
+.venv
+env/
+venv/
+env.bak/
+venv.bak/
+.idea
+.pytest_cache/
+.cache

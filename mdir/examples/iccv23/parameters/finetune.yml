@@ -1,0 +1,106 @@
+#
+# Metric learning for GeM method with GAN training data augmentation
+#
+
+network:
+  type: CirSequentialNetwork
+  sequence: augment,embed
+  augment:
+    type: SingleNetwork
+    path: experiments/gan/${SCENARIO_NAME}/epochs/generator_X_best.pth
+    runtime:
+      frozen: true
+      wrappers: meanstd_post:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.485,0.456,0.406],[0.229,0.224,0.225]],clahepost:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:1.0,cir_ratio_pass_through:0.25:anc
+      data: load_from_checkpoint
+  embed:
+    type: SingleNetwork
+    model:
+      architecture: cirnet
+      cir_architecture: vgg16
+      local_whitening: false
+      pooling: gem
+      pretrained: true
+      regional: false
+      whitening: false
+    initialize: false
+    runtime:
+      data:
+        transforms: pil2np | apply_clahe:1.0 | totensor | normalize
+        mean_std: [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]
+      wrappers: cirfaketuplebatch
+learning:
+  checkpoints:
+    directory: experiments/cirtorch/vgg16_${SCENARIO_NAME}
+    checkpoint_every: 2
+    store_every: 10
+    directory_epoch_regex: null
+  training:
+    criterion:
+      loss: contrastive
+      margin: 0.75
+    deterministic: false
+    epoch_iteration:
+      batch_average: false
+      criterion: default
+      data: train
+      fakebatch: true
+      type: SupervisedEpoch
+    epochs: 40
+    optimizer:
+      algorithm: adam
+      lr: 5.0e-07
+      beta1: 0.9
+      beta2: 0.999
+      weight_decay: 0.0005
+    scheduler:
+      algorithm: gamma
+      gamma: 0.99
+    seed: 0
+    type: EpochTraining
+  type: TrainValLearning
+  validation:
+    criterion: default
+    data: val
+    frequency: 5
+    network_overlay: null
+    type: SingleValidation
+output:
+  learning:
+    htmlreport: {}
+    progress:
+      print_each: 100
+      print_each_val: 1000
+data:
+  train:
+    dataset:
+      dataset: retrieval-SfM-120k
+      dataset_pkl: null
+      image_dir: data/train/retrieval-SfM-120k/ims/*
+      image_size: 362
+      name: CirDiverseAnchors
+      neg_num: 5
+      pool_size: 22000
+      qpool_size: 10000
+      query_size: 2000
+      similar_exclude: 0.2
+      similar_include: 0.8
+      split: train
+    loader:
+      batch_size: 5
+  val:
+    dataset:
+      dataset: retrieval-SfM-120k
+      dataset_pkl: null
+      image_dir: data/train/retrieval-SfM-120k/ims/*
+      image_size: 362
+      name: CirTuples
+      neg_num: 5
+      pool_size: .inf
+      query_size: .inf
+      split: val
+    loader:
+      batch_size: 1
+  test:
+    dataset:
+      image_size: 1024
+      name: CirImageList

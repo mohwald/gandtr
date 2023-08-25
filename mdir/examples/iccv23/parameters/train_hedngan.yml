@@ -1,0 +1,134 @@
+network:
+  type: NetworkSet
+  generator_X:
+    type: SingleNetwork
+    model:
+      architecture: official_resnet_generator
+      no_antialias: true
+      no_antialias_up: true
+      input_nc: 3
+      output_nc: 3
+      n_blocks: 9
+      norm_layer: batch
+    initialize:
+      weights: kaiming_p2p
+      seed: 0
+    runtime:
+      wrappers: ""
+      data:
+        transforms: pil2np | totensor | normalize
+        mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+  detector:
+    type: SingleNetwork
+    path: null
+    model:
+      architecture: hed_interpolation
+      pretrained: /mnt/fry2/landmarkdb/models/pytorch/weights/hed/sniklaus_github.pth
+    initialize: false
+    runtime:
+      wrappers: rgb2bgr_pre,meanstd_pre:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.40787054,0.45752458,0.48109378],[1.0,1.0,1.0]]
+      data:
+        transforms: pil2np | totensor | normalize
+        mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+  detector_frozen:
+    type: SingleNetwork
+    path: null
+    model:
+      architecture: hed_interpolation
+      pretrained: /mnt/fry2/landmarkdb/models/pytorch/weights/hed/sniklaus_github.pth
+    initialize: false
+    runtime:
+      frozen: true
+      wrappers: rgb2bgr_pre,meanstd_pre:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.40787054,0.45752458,0.48109378],[1.0,1.0,1.0]]
+      data:
+        transforms: pil2np | totensor | normalize
+        mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+  discriminator_Y:
+    type: SingleNetwork
+    model:
+      architecture: official_p2p_discriminator
+      no_antialias: true
+      input_nc: 3
+      norm_layer: batch
+    initialize:
+      weights: kaiming_p2p
+      seed: 0
+    runtime:
+      wrappers: ""
+      data: {}
+learning:
+  type: TrainValLearning
+  checkpoints:
+    directory: experiments/gan/${SCENARIO_NAME}
+    store_every: 10
+    checkpoint_every: 2
+    directory_epoch_regex: null
+  training:
+    type: EpochTraining
+    epochs: 50
+    seed: 0
+    deterministic: false
+    criterion:
+      loss: multihead_loss
+      weights:
+        adversarial: 1
+        edge: 5
+        hed: 1
+      normalize_weights: false
+      adversarial:
+        loss: discriminator_loss
+        criterion:
+          loss: mse
+      edge:
+        loss: l1
+      hed:
+        loss: l1
+    optimizer:
+      composition:
+        type: alternation
+        order: discriminator_Y,generator_X,detector
+        alternate_iteration: 1
+      generator_X:
+        algorithm: adam
+        lr: 2.e-4
+        beta1: 0.5
+        beta2: 0.999
+        weight_decay: 0
+      discriminator_Y:
+        algorithm: adam
+        lr: 2.e-4
+        beta1: 0.5
+        beta2: 0.999
+        weight_decay: 0
+      detector:
+        algorithm: adam
+        lr: 1.e-6
+        beta1: 0.9
+        beta2: 0.999
+        weight_decay: 0.0002
+    scheduler:
+      composition:
+        type: set
+      generator_X:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+      discriminator_Y:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+      detector:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+    epoch_iteration:
+      type: SupervisedHEDNGANEpoch
+      data: train
+      criterion: default
+  validation:
+    __template__: _gan_eval.yml
+output:
+  learning:
+    progress:
+      print_each: 100
+      print_each_val: 1000
+    htmlreport: {}
+data:
+  __template__: _gan_data.yml

@@ -1,0 +1,39 @@
+#
+# Pretrained model evaluation template used for all models from iccv23
+#
+
+download:
+  __doc__: "Download all data for retrieval evaluation"
+
+  1_download_test: &download_test
+    __function__: mdir.utils.download.roxf5k_rpar6k_247tokyo1k
+
+eval:
+  __doc__: "Evaluate pretrained GeM retrieval model with VGG-16 backbone"
+
+  0_download_retrieval_test: *download_test
+
+  1_evaluate:
+    __function__: mdir.stages.validate.validate
+    __template__: ../parameters/eval.yml
+    network.path: null
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: null
+
+  2_print_scores:
+    __function__: print_scores
+    metadata: ${1_evaluate._output_metadata}
+
+eval_r101:
+  __doc__: "Evaluate pretrained GeM retrieval model with ResNet-101 backbone"
+
+  0_download_retrieval_test: *download_test
+
+  1_evaluate:
+    __function__: mdir.stages.validate.validate
+    __template__: ../parameters/eval.yml
+    network.path: null
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: null
+
+  2_print_scores:
+    __function__: print_scores
+    metadata: ${1_evaluate._output_metadata}

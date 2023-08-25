@@ -1,0 +1,18 @@
+data:
+  test:
+    dataset:
+      image_dir: data/train/retrieval-SfM-120k/ims/*
+      image_size: 1024
+      name: CirImageList
+network:
+  path: null
+  runtime:
+    wrappers: cirmultiscale:True
+output:
+  debug: true
+  inference:
+    name: embedding
+whitening:
+  dataset_pkl: http://cmp.felk.cvut.cz/cnnimageretrieval/data/train/dbs/retrieval-SfM-120k-whiten.pkl
+  directory: null
+  type: lw

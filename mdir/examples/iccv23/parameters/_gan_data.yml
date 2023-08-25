@@ -1,0 +1,22 @@
+train:
+  dataset:
+    name: RandomDomainsPair
+    dataset_X: data/train/retrieval-SfM-120k/dataset/train_day.txt
+    dataset_Y: data/train/retrieval-SfM-120k/dataset/train_night.txt
+    image_dir: data/train/retrieval-SfM-120k/ims/*
+    size: 10000
+  loader:
+    batch_size: 1
+  transforms: pil2np | scalecrop:256_256:0.8_1 | totensor | normalize
+  mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+val:
+  dataset:
+    name: PregeneratedImageTuple
+    image_dir: null
+    dataset: null
+    data_key: val
+    idx: "0_1"
+  loader:
+    batch_size: 1
+  transforms: pil2np | totensor | normalize
+  mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]

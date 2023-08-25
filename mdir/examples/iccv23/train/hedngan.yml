@@ -1,0 +1,19 @@
+__template__: _train.yml
+
+train:
+  1_train_augment: &train_augment
+    __template__: ../parameters/train_hedngan.yml
+    data.train.loader.batch_size: 10
+
+# Comment or remove the whole finetune* substitution, if you do not want to use pretrained GAN generator.
+
+finetune:
+  1_finetune_embed:
+    network.augment.path: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_generator_X.pth
+
+finetune_r101:
+  1_finetune_embed:
+    network.augment.path: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_generator_X.pth
+
+all:
+  1_train_augment: *train_augment

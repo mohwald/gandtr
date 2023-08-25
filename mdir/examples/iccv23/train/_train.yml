@@ -1,0 +1,122 @@
+#
+# Template used for training and consequent evaluation of all models from iccv23
+#
+
+download:
+  __doc__: "Download all data for GAN training, retrieval fine-tuning and testing"
+
+  1_download_train: &download_gan_train
+    __function__: mdir.utils.download.rsfm120k
+
+  2_download_test: &download_test
+    __function__: mdir.utils.download.roxf5k_rpar6k_247tokyo1k
+
+train:
+  __doc__: "Only train GAN augmentation model"
+
+  # Download dataset for image-to-image translation training
+  0_download_train: *download_gan_train
+
+  # Train augmentation GAN
+  1_train_augment: &train_augment
+    __function__: mdir.stages.train.train
+
+output:
+  __doc__: "Output images from the trained augmentation network"
+
+  # Output images given path list from stdin
+  1_output:
+    __function__: mdir.stages.infer.infer
+    __template__: ../parameters/output_gan.yml
+
+finetune:
+  __doc__: "Fine-tune retrieval embedding model with VGG-16 backbone and evaluate it"
+
+  # Download training data for retrieval
+  0_download_train: &download_train
+    __function__: cirtorch.utils.download.download_train
+
+  # Finetune embedding network for retrieval with GAN data augmentation
+  1_finetune_embed: &finetune_embed
+    __function__: mdir.stages.train.train
+    __template__: ../parameters/finetune.yml
+
+  # Whiten trained embedding network
+  2_train_whitening: &whitening
+    __function__: mdir.stages.multistep.infer_and_learn_whitening
+    __template__: ../parameters/whitening.yml
+    network.path: ${1_finetune_embed.parameters.learning.checkpoints.directory}/epochs/
+    whitening.directory: ${1_finetune_embed.parameters.learning.checkpoints.directory}
+
+  # Download test data for retrieval
+  3_download_test: *download_test
+
+  # Evaluate trained embedding network with whitening
+  4_evaluate: &evaluate
+    __function__: mdir.stages.validate.validate
+    __template__: ../parameters/eval.yml
+    network.path: ${1_finetune_embed.parameters.learning.checkpoints.directory}/epochs/embed_best.pth
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: ${1_finetune_embed.parameters.learning.checkpoints.directory}/whitening/lw-retrieval.pkl
+
+  # Print scores
+  5_print_scores:
+    __function__: print_scores
+    metadata: ${4_evaluate._output_metadata}
+
+finetune_r101:
+  __doc__: "Fine-tune retrieval embedding model with ResNet-101 backbone and evaluate it"
+
+  # Download training data for retrieval
+  0_download_train: *download_train
+
+  # Finetune embedding network for retrieval with GAN data augmentation
+  1_finetune_embed:
+    __function__: mdir.stages.train.train
+    __template__: ../parameters/finetune.yml
+    network.embed.model.cir_architecture: resnet101
+    learning.checkpoints.directory: experiments/cirtorch/r101_${SCENARIO_NAME}
+    learning.training.criterion.margin: 0.85
+
+  # Whiten trained embedding network
+  2_train_whitening: *whitening
+
+  # Download testing data for retrieval
+  3_download_test: *download_test
+
+  # Evaluate trained embedding network with whitening
+  4_evaluate:
+    __function__: mdir.stages.validate.validate
+    __template__: ../parameters/eval.yml
+    network.path: ${1_finetune_embed.parameters.learning.checkpoints.directory}/epochs/embed_best.pth
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: experiments/cirtorch/r101_${SCENARIO_NAME}/whitening/lw-retrieval.pkl
+
+  # Print scores
+  5_print_scores:
+    __function__: print_scores
+    metadata: ${4_evaluate._output_metadata}
+
+all:
+  __doc__: "Train GAN augmentation model, then fine-tune GeM VGG-16 retrieval embedding model and evaluate it"
+
+  # Download dataset for image-to-image translation training
+  0_download_augment: *download_gan_train
+
+  # Train augmentation GAN
+  1_train_augment: *train_augment
+
+  # Finetune embedding network for retrieval with GAN data augmentation
+  1_finetune_embed: *finetune_embed
+
+  # Whiten trained embedding network
+  2_train_whitening: *whitening
+
+  # Download testing data for retrieval
+  3_download_test: *download_test
+
+  # Evaluate trained embedding network with whitening
+  4_evaluate: *evaluate
+
+  # Print scores
+  5_print_scores:
+    __function__: print_scores
+    metadata: ${4_evaluate._output_metadata}

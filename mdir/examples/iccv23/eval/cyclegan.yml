@@ -1,0 +1,11 @@
+__template__: _eval.yml
+
+eval:
+  1_evaluate:
+    network.path: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_vgg16.pth
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_vgg16_lw.pkl
+
+eval_r101:
+  1_evaluate:
+    network.path: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_resnet101.pth
+    network.runtime.wrappers.eval.0_cirwhiten.whitening: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_resnet101_lw.pkl

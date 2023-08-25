@@ -1,0 +1,15 @@
+type: MultiCriterialValidation
+decisive_criterion: "epoch"
+visual:
+  type: SingleValidation
+  frequency: 5
+  network_overlay: null
+  data: null
+  criterion:
+    type: visual
+    data:
+      dataset:
+        name: InferImageList
+        image_dir: data/val/day_night
+      transforms: pil2np | downscale:362 | totensor | normalize
+      mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]

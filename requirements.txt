@@ -1,0 +1,9 @@
+pyyaml
+h5py
+opencv-python
+matplotlib
+psutil
+torch>=1.5.0
+torchvision>=0.6.0
+imageio
+graphviz

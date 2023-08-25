@@ -1,0 +1,9 @@
+__template__: _train.yml
+
+train:
+  1_train_augment: &train_augment
+    __template__: ../parameters/train_hedgan.yml
+    data.train.loader.batch_size: 10
+
+all:
+  1_train_augment: *train_augment

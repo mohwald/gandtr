@@ -1,0 +1,129 @@
+network:
+  type: NetworkSet
+  generator_X:
+    type: SingleNetwork
+    model:
+      architecture: official_resnet_generator
+      no_antialias: true
+      no_antialias_up: true
+      input_nc: 3
+      output_nc: 3
+      n_blocks: 9
+      norm_layer: instance
+    initialize:
+      weights: kaiming_p2p
+      seed: 0
+    runtime:
+      wrappers: ""
+      data:
+        transforms: pil2np | totensor | normalize
+        mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+  featdown:
+    type: SingleNetwork
+    model:
+      architecture: official_p2p_mlp
+      input_nc: 3
+      nc: 256
+      nce_layers: "4,8,12,16"  # is "4,7,10,14" with antialias
+    initialize:
+      weights: kaiming_p2p
+      seed: 0
+    runtime:
+      wrappers: ""
+      data:
+        transforms: pil2np | totensor | normalize
+        mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+  discriminator_Y:
+    type: SingleNetwork
+    model:
+      architecture: official_p2p_discriminator
+      no_antialias: true
+      input_nc: 3
+      norm_layer: instance
+    initialize:
+      weights: kaiming_p2p
+      seed: 0
+    runtime:
+      wrappers: ""
+      data: {}
+learning:
+  type: TrainValLearning
+  checkpoints:
+    directory: experiments/gan/${SCENARIO_NAME}
+    store_every: 10
+    checkpoint_every: 2
+    directory_epoch_regex: null
+  training:
+    type: EpochTraining
+    epochs: 50
+    seed: 0
+    deterministic: false
+    criterion:
+      loss: multihead_loss
+      weights:
+        adversarial: 1
+        identity: 10
+        nce: 1
+      normalize_weights: false
+      adversarial:
+        loss: discriminator_loss
+        criterion:
+          loss: mse
+      identity:
+        loss: l1
+      nce:
+        loss: multilayer_patchnce_loss
+        batch_dim_for_bmm: 1
+        nce_layers: "4,8,12,16"  # is "4,7,10,14" with antialias
+        num_patches: 256
+        temperature: 0.07
+        weight: 1
+    optimizer:
+      composition:
+        type: alternation
+        order: discriminator_Y,generator_X,featdown
+        alternate_iteration: 1
+      generator_X:
+        algorithm: adam
+        lr: 2.e-4
+        beta1: 0.5
+        beta2: 0.999
+        weight_decay: 0
+      discriminator_Y:
+        algorithm: adam
+        lr: 2.e-4
+        beta1: 0.5
+        beta2: 0.999
+        weight_decay: 0
+      featdown:
+        algorithm: adam
+        lr: 2.e-4
+        beta1: 0.5
+        beta2: 0.999
+        weight_decay: 0
+    scheduler:
+      composition:
+        type: set
+      generator_X:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+      discriminator_Y:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+      featdown:
+        algorithm: lambda_p2p
+        n_epochs_decay: 25
+    epoch_iteration:
+      type: SupervisedCUTEpoch
+      data: train
+      criterion: default
+  validation:
+    __template__: _gan_eval.yml
+output:
+  learning:
+    progress:
+      print_each: 100
+      print_each_val: 1000
+    htmlreport: {}
+data:
+  __template__: _gan_data.yml
