@@ -6,7 +6,9 @@ Codebase for the publication:
 Albert Mohwald, [Tomas Jenicek][jenicek] and [Ondřej Chum][chum]  
 In International Conference on Computer Vision (ICCV), 2023
 
-This repository is a fork of [mdir](https://github.com/jenicek/mdir/), builds on top of [cirtorch](https://github.com/filipradenovic/cnnimageretrieval-pytorch/) for image retrieval, and adapts [CycleGAN](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) and [CUT](https://github.com/taesungp/contrastive-unpaired-translation) for image-to-image translation.
+This repository builds on top of image retrieval implemented in [mdir][mdir] and [cirtorch][cirtorch] and adapts [CycleGAN][cyclegan] and [CUT][cut] for image-to-image translation.
+
+![train_and_finetune](https://github.com/mohwald/gandtr/assets/29608815/bc284d8a-5da6-4e24-921a-28717e9015e1)
 
 ----
 
@@ -118,3 +120,7 @@ To change the backbone used for the finetuning, replace `finetune` with `finetun
 
 [jenicek]: http://cmp.felk.cvut.cz/~jenicto2
 [chum]: http://cmp.felk.cvut.cz/~chum
+[mdir]: https://github.com/jenicek/mdir/
+[cirtorch]: https://github.com/filipradenovic/cnnimageretrieval-pytorch/
+[cyclegan]: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/
+[cut]: https://github.com/taesungp/contrastive-unpaired-translation/
