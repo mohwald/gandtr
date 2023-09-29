@@ -2,9 +2,9 @@
 
 Codebase for the publication:
 
-**Dark Side Augmentation**: Generating Diverse Night Examples for Metric Learning  
-Albert Mohwald, [Tomas Jenicek][jenicek] and [Ondřej Chum][chum]  
-In International Conference on Computer Vision (ICCV), 2023
+**Dark Side Augmentation**: Generating Diverse Night Examples for Metric Learning [[arXiv](https://arxiv.org/abs/2309.16351)].
+Albert Mohwald, [Tomas Jenicek][jenicek] and [Ondřej Chum][chum].
+In International Conference on Computer Vision (ICCV), 2023.
 
 This repository builds on top of image retrieval implemented in [mdir][mdir] and [cirtorch][cirtorch] and adapts [CycleGAN][cyclegan] and [CUT][cut] for image-to-image translation.
 
@@ -114,7 +114,6 @@ python3 perform_scenario.py finetune iccv23/train/hedngan.yml
 This command will both finetune the embedding model and consequently evaluate it.
 
 To change the backbone used for the finetuning, replace `finetune` with `finetune_r101` for GeM ResNet-101.
-
 
 <!-- References -->
 
