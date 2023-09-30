@@ -1,5 +1,9 @@
 # GAN domain translation for recognition
 
+**[arXiv](https://arxiv.org/abs/2309.16351) | [Paper with supplementary](https://openaccess.thecvf.com/content/ICCV2023/html/Mohwald_Dark_Side_Augmentation_Generating_Diverse_Night_Examples_for_Metric_Learning_ICCV_2023_paper.html) | [Video (5m)](https://youtu.be/zlT-GJOcgYw)**
+
+----
+
 Codebase for the publication:
 
 **Dark Side Augmentation**: Generating Diverse Night Examples for Metric Learning [[arXiv](https://arxiv.org/abs/2309.16351)].
