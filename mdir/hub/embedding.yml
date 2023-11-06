@@ -1,0 +1,7 @@
+path: null
+runtime:
+  wrappers:
+    train:
+    eval:
+      0_cirwhiten: {whitening: null, dimensions: null}
+      1_cirmultiscale: {scales: True}
