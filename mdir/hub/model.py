@@ -48,6 +48,10 @@ def _create(path, substitutions, pretrained):
 
 
 def gem_vgg16_cyclegan(pretrained=True):
+    """
+    GeM global descriptor model with VGG16 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
+    with CycleGAN query augmentation and with CLAHE.
+    """
     if pretrained:
         return _create(
             FILE.parent / "embedding.yml", {
@@ -60,6 +64,10 @@ def gem_vgg16_cyclegan(pretrained=True):
 
 
 def gem_vgg16_hedngan(pretrained=True):
+    """
+    GeM global descriptor model with VGG16 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
+    with HED-N-GAN query augmentation and with CLAHE.
+    """
     if pretrained:
         return _create(
             FILE.parent / "embedding.yml", {
@@ -72,6 +80,10 @@ def gem_vgg16_hedngan(pretrained=True):
 
 
 def gem_resnet101_cyclegan(pretrained=True):
+    """
+    GeM global descriptor model with ResNet-101 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
+    with CycleGAN query augmentation and with CLAHE.
+    """
     if pretrained:
         return _create(
             FILE.parent / "embedding.yml", {
@@ -84,6 +96,10 @@ def gem_resnet101_cyclegan(pretrained=True):
 
 
 def gem_resnet101_hedngan(pretrained=True):
+    """
+    GeM global descriptor model with ResNet-101 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
+    with HED-N-GAN query augmentation and with CLAHE.
+    """
     if pretrained:
         return _create(
             FILE.parent / "embedding.yml", {
@@ -101,12 +117,18 @@ def gem_resnet101_hedngan(pretrained=True):
 
 
 def cyclegan(pretrained=True):
+    """
+    ResNet CycleGAN generator (optionally) pretrained on Retrieval-SfM 120k dataset for day-to-night image translation.
+    """
     if pretrained:
         return _create(FILE.parent / "generator.yml", {"path": f"{BASE_URL}cyclegan_generator_X.pth"}, pretrained)
     return _create(FILE.parent / "generator.yml", {}, pretrained)
 
 
 def hedngan(pretrained=True):
+    """
+    ResNet HED-N-GAN generator (optionally) pretrained on Retrieval-SfM 120k dataset for day-to-night image translation.
+    """
     if pretrained:
         return _create(FILE.parent / "generator.yml", {"path": f"{BASE_URL}hedngan_generator_X.pth"}, pretrained)
     return _create(
