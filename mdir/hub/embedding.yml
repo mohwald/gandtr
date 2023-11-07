@@ -1,0 +1,25 @@
+initialized:
+  type: SingleNetwork
+  model:
+    architecture: cirnet
+    cir_architecture: null
+    local_whitening: false
+    pooling: gem
+    pretrained: false
+    regional: false
+    whitening: false
+  initialize: false
+  runtime:
+    data:
+      transforms: pil2np | apply_clahe:1.0 | totensor | normalize
+      mean_std: [[0.485, 0.456, 0.406], [0.229, 0.224, 0.225]]
+    wrappers: cirfaketuplebatch
+
+pretrained:
+  path: null
+  runtime:
+    wrappers:
+      train:
+      eval:
+        0_cirwhiten: {whitening: null, dimensions: null}
+        1_cirmultiscale: {scales: True}

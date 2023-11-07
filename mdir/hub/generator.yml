@@ -1,0 +1,23 @@
+initialized:
+  type: SingleNetwork
+  model:
+    architecture: official_resnet_generator
+    no_antialias: true
+    no_antialias_up: true
+    input_nc: 3
+    output_nc: 3
+    n_blocks: 9
+    norm_layer: instance
+  initialize:
+    weights: normal_p2p
+    seed: 0
+  runtime:
+    wrappers: ""
+    data:
+      transforms: pil2np | totensor | normalize
+      mean_std: [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]
+
+pretrained:
+  path: null
+  runtime:
+    wrappers: ""

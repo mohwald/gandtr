@@ -16,6 +16,109 @@ This repository builds on top of image retrieval implemented in [mdir][mdir] and
 
 ----
 
+## Pretrained models
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Weights</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>CycleGAN (day-to-night)</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_generator_X.pth">Download</a></td>
+    </tr>
+    <tr>
+      <td>HED<sup>N</sup>GAN (day-to-night)</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_generator_X.pth">Download</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th>Avg</th>
+      <th>Tokyo</th>
+      <th>ROxf</th>
+      <th>RPar</th>
+      <th>Weights</th>
+      <th>Whitening</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>GeM VGG16 CycleGAN</td>
+      <td>74.0</td>
+      <td>90.2</td>
+      <td>60.7</td>
+      <td>71.0</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_vgg16.pth">Download</a></td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_vgg16_lw.pkl">Download</a></td>
+    </tr>
+    <tr>
+      <td>GeM VGG16 HED<sup>N</sup>GAN</td>
+      <td>73.5</td>
+      <td>88.8</td>
+      <td>61.1</td>
+      <td>70.7</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_embed_vgg16.pth">Download</a></td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_embed_vgg16_lw.pkl">Download</a></td>
+    </tr>
+    <tr>
+      <td>GeM ResNet-101 CycleGAN</td>
+      <td>78.4</td>
+      <td>92.0</td>
+      <td>66.8</td>
+      <td>76.4</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_resnet101.pth">Download</a></td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/cyclegan_embed_resnet101_lw.pkl">Download</a></td>
+    </tr>
+    <tr>
+      <td>GeM ResNet-101 HED<sup>N</sup>GAN</td>
+      <td>78.4</td>
+      <td>91.7</td>
+      <td>66.6</td>
+      <td>76.8</td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_embed_resnet101.pth">Download</a></td>
+      <td><a href="http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hedngan_embed_resnet101_lw.pkl">Download</a></td>
+    </tr>
+  </tbody>
+</table>
+
+All models are pretrained on [Retrieval-SfM 120k][sfm].
+
+### Torch Hub
+
+To use any pretrained model, please follow [PyTorch installation instructions](https://pytorch.org/get-started/locally/).
+Only PyTorch is needed for loading the models.
+
+```python
+import torch
+
+# Day-to-night generators
+cyclegan = torch.hub.load('mohwald/gandtr', 'cyclegan')
+hedngan = torch.hub.load('mohwald/gandtr', 'hedngan')
+
+# Image descriptors
+gem_vgg16_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_cyclegan')
+gem_vgg16_hedngan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_hedngan')
+gem_resnet101_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_cyclegan')
+gem_resnet101_hedngan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_hedngan')
+```
+
+Each model initialized this way has an additional attribute function `transform` that preprocesses a PIL image and outputs normalized tensor that is excepted as the input by the loaded model.
+
+> [!IMPORTANT]
+> All descriptor models listed above were trained with CLAHE. To achieve best performance, use `gem_vgg16_hedngan.transform` or apply [Kornia CLAHE](https://kornia.readthedocs.io/en/latest/enhance.html#kornia.enhance.equalize_clahe) on a grid 8x8 with clip
+limit of 1.0 as an image preprocessing step.
+
+----
+
+
 ## Installation
 
 1. Install ffmpeq and graphviz, if you do not have it;  ffmpeg is required for OpenCV, graphviz allows to draw network architecture. 
@@ -65,7 +168,7 @@ To evaluate a model from ICCV23 paper, e.g. HED-N-GAN method with GeM VGG16 back
 python3 perform_scenario.py eval iccv23/eval/hedngan.yml
 ```
 
-> **Warning**<br>
+> [!WARNING]
 > Oxford and Paris buildings dataset images are no longer available at the original sources and thus cannot be downloaded automatically. One option is to download images from [Kaggle](https://www.kaggle.com/datasets/skylord/oxbuildings) (requires registration). Images should be placed inside `${CIRTORCH_ROOT}/data/test/{oxford5k, paris6k}/jpg`, without any nested directories.
 
 To change the GAN generator used in the augmentation, use different scenario with the corresponding generator name.
@@ -127,3 +230,4 @@ To change the backbone used for the finetuning, replace `finetune` with `finetun
 [cirtorch]: https://github.com/filipradenovic/cnnimageretrieval-pytorch/
 [cyclegan]: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/
 [cut]: https://github.com/taesungp/contrastive-unpaired-translation/
+[sfm]: https://cmp.felk.cvut.cz/cnnimageretrieval/
