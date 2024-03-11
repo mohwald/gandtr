@@ -14,7 +14,7 @@ from mdir.components.data.transform import initialize_transforms
 from mdir.tools.utils import load_yaml_scenario
 
 
-def _create(path, substitutions, pretrained):
+def _create(path, substitutions, pretrained, device):
     params = load_yaml_scenario([str(path)])
     params = params["pretrained"] if pretrained else params["initialized"]
     for target, value in substitutions.items():
@@ -23,7 +23,9 @@ def _create(path, substitutions, pretrained):
             p = p[k]
         p[target.split(".")[-1]] = value
 
-    device = torch.device("cpu")
+    if not device:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     if pretrained:
         state = Checkpoints.load_network(params["path"])
         # Fix cirnet unnecessary download
@@ -47,7 +49,7 @@ def _create(path, substitutions, pretrained):
 #
 
 
-def gem_vgg16_cyclegan(pretrained=True):
+def gem_vgg16_cyclegan(pretrained=True, device=None):
     """
     GeM global descriptor model with VGG16 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
     with CycleGAN query augmentation and with CLAHE.
@@ -58,12 +60,13 @@ def gem_vgg16_cyclegan(pretrained=True):
                 "path": f"{BASE_URL}cyclegan_embed_vgg16.pth",
                 "runtime.wrappers.eval.0_cirwhiten.whitening": f"{BASE_URL}cyclegan_embed_vgg16_lw.pkl"
             },
-            pretrained
+            pretrained,
+            device
         )
-    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "vgg16"}, pretrained)
+    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "vgg16"}, pretrained, device)
 
 
-def gem_vgg16_hedngan(pretrained=True):
+def gem_vgg16_hedngan(pretrained=True, device=None):
     """
     GeM global descriptor model with VGG16 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
     with HED-N-GAN query augmentation and with CLAHE.
@@ -74,12 +77,13 @@ def gem_vgg16_hedngan(pretrained=True):
                 "path": f"{BASE_URL}hedngan_embed_vgg16.pth",
                 "runtime.wrappers.eval.0_cirwhiten.whitening": f"{BASE_URL}hedngan_embed_vgg16_lw.pkl"
             },
-            pretrained
+            pretrained,
+            device
         )
-    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "vgg16"}, pretrained)
+    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "vgg16"}, pretrained, device)
 
 
-def gem_resnet101_cyclegan(pretrained=True):
+def gem_resnet101_cyclegan(pretrained=True, device=None):
     """
     GeM global descriptor model with ResNet-101 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
     with CycleGAN query augmentation and with CLAHE.
@@ -90,12 +94,13 @@ def gem_resnet101_cyclegan(pretrained=True):
                 "path": f"{BASE_URL}cyclegan_embed_resnet101.pth",
                 "runtime.wrappers.eval.0_cirwhiten.whitening": f"{BASE_URL}cyclegan_embed_resnet101_lw.pkl"
             },
-            pretrained
+            pretrained,
+            device
         )
-    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "resnet101"}, pretrained)
+    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "resnet101"}, pretrained, device)
 
 
-def gem_resnet101_hedngan(pretrained=True):
+def gem_resnet101_hedngan(pretrained=True, device=None):
     """
     GeM global descriptor model with ResNet-101 backbone (optionally) pretrained on Retrieval-SfM 120k dataset
     with HED-N-GAN query augmentation and with CLAHE.
@@ -106,9 +111,10 @@ def gem_resnet101_hedngan(pretrained=True):
                 "path": f"{BASE_URL}hedngan_embed_resnet101.pth",
                 "runtime.wrappers.eval.0_cirwhiten.whitening": f"{BASE_URL}hedngan_embed_resnet101_lw.pkl"
             },
-            pretrained
+            pretrained,
+            device
         )
-    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "resnet101"}, pretrained)
+    return _create(FILE.parent / "embedding.yml", {"model.cir_architecture": "resnet101"}, pretrained, device)
 
 
 #
@@ -116,23 +122,33 @@ def gem_resnet101_hedngan(pretrained=True):
 #
 
 
-def cyclegan(pretrained=True):
+def cyclegan(pretrained=True, device=None):
     """
     ResNet CycleGAN generator (optionally) pretrained on Retrieval-SfM 120k dataset for day-to-night image translation.
     """
     if pretrained:
-        return _create(FILE.parent / "generator.yml", {"path": f"{BASE_URL}cyclegan_generator_X.pth"}, pretrained)
-    return _create(FILE.parent / "generator.yml", {}, pretrained)
+        return _create(
+            FILE.parent / "generator.yml",
+            {"path": f"{BASE_URL}cyclegan_generator_X.pth"},
+            pretrained,
+            device
+        )
+    return _create(FILE.parent / "generator.yml", {}, pretrained, device)
 
 
-def hedngan(pretrained=True):
+def hedngan(pretrained=True, device=None):
     """
     ResNet HED-N-GAN generator (optionally) pretrained on Retrieval-SfM 120k dataset for day-to-night image translation.
     """
     if pretrained:
-        return _create(FILE.parent / "generator.yml", {"path": f"{BASE_URL}hedngan_generator_X.pth"}, pretrained)
+        return _create(
+            FILE.parent / "generator.yml",
+            {"path": f"{BASE_URL}hedngan_generator_X.pth"},
+            pretrained,
+            device)
     return _create(
         FILE.parent / "generator.yml",
         {"model.norm_layer": "batch", "initialize.weights": "kaiming_p2p"},
-        pretrained
+        pretrained,
+        device
     )
