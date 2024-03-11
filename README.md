@@ -94,27 +94,37 @@ All models are pretrained on [Retrieval-SfM 120k][sfm].
 ### Torch Hub
 
 To use any pretrained model, please follow [PyTorch installation instructions](https://pytorch.org/get-started/locally/).
-Only PyTorch is needed for loading the models.
 
 ```python
 import torch
 
 # Day-to-night generators
-cyclegan = torch.hub.load('mohwald/gandtr', 'cyclegan')
-hedngan = torch.hub.load('mohwald/gandtr', 'hedngan')
+cyclegan = torch.hub.load('mohwald/gandtr', 'cyclegan', pretrained=True)
+hedngan = torch.hub.load('mohwald/gandtr', 'hedngan', pretrained=True)
 
 # Image descriptors
-gem_vgg16_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_cyclegan')
-gem_vgg16_hedngan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_hedngan')
-gem_resnet101_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_cyclegan')
-gem_resnet101_hedngan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_hedngan')
+gem_vgg16_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_cyclegan', pretrained=True)
+gem_vgg16_hedngan = torch.hub.load('mohwald/gandtr', 'gem_vgg16_hedngan', pretrained=True)
+gem_resnet101_cyclegan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_cyclegan', pretrained=True)
+gem_resnet101_hedngan = torch.hub.load('mohwald/gandtr', 'gem_resnet101_hedngan', pretrained=True)
 ```
 
-Each model initialized this way has an additional attribute function `transform` that preprocesses a PIL image and outputs normalized tensor that is excepted as the input by the loaded model.
+Models initialized this way are pretrained and loaded on GPU by default. If do not want to load pretrained weights, pass `pretrained=False`; to load the model on e.g. CPU, pass `device="cpu"`. 
 
 > [!IMPORTANT]
-> All descriptor models listed above were trained with CLAHE. To achieve best performance, use `gem_vgg16_hedngan.transform` or apply [Kornia CLAHE](https://kornia.readthedocs.io/en/latest/enhance.html#kornia.enhance.equalize_clahe) on a grid 8x8 with clip
-limit of 1.0 as an image preprocessing step.
+> The expected input of all descriptor models listed above is a **batch of normalized images after CLAHE transform**. To recommended way how to obtain the image preprocessing transforms (suitable for dataset loader) is demonstrated in the snippet below:
+
+```
+>>> import torch
+>>> model = torch.hub.load('mohwald/gandtr', 'gem_vgg16_hedngan')
+>>> model.transform
+Compose(
+    Pil2Numpy()
+    ApplyClahe(clip_limit=1.0, grid_size=8, colorspace=lab)
+    ToTensor()
+    Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225], strict_shape=True)
+)
+```
 
 ----
 
