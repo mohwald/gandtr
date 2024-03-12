@@ -126,8 +126,31 @@ Compose(
 )
 ```
 
-----
+### Inference
 
+A single global descriptor can be extracted from an image simply with:
+
+```python
+import torch
+from PIL import Image
+
+model = torch.hub.load('mohwald/gandtr', 'gem_vgg16_hedngan')
+with open("orloj.jpg", 'rb') as f:
+    image = Image.open(f).convert("RGB")
+inputs = model.transform(image).unsqueeze(0)
+with torch.no_grad():
+    vec = model(inputs)
+print(vec)
+```
+
+The output is 512-sized L2-normalized whitened vector. For the [orloj.jpg](http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/orloj.jpg), you should obtain the vector ending very close to:
+
+```
+        -6.3813e-03, -2.2138e-04,  2.0179e-03,  1.9477e-02,  6.6316e-03,
+         1.0677e-02,  1.0847e-02], device='cuda:0')
+```
+
+----
 
 ## Installation
 
