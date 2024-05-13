@@ -5,11 +5,15 @@ import numpy as np
 import h5py
 from PIL import Image
 from PIL import ImageFile
+from packaging.version import Version
 
 import torch
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 warnings.filterwarnings("ignore", "Possibly corrupt EXIF data.", UserWarning)
+
+LANCZOS = Image.LANCZOS if Version(Image.__version__) >= Version("10.0.0") else Image.ANTIALIAS
+
 
 def cid2filename(cid, prefix):
     """
@@ -74,7 +78,7 @@ def imresize(img, imsize):
         #     raise ValueError("Numpy array has incompatible size '%s'" % str(img.shape))
         return img
 
-    img.thumbnail((imsize, imsize), Image.ANTIALIAS)
+    img.thumbnail((imsize, imsize), LANCZOS)
     return img
 
 def flip(x, dim):
