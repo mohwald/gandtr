@@ -5,10 +5,10 @@ train:
     __template__: ../parameters/train_hedngan.yml
     data.train.loader.batch_size: 10
     network.detector.model.architecture: rcf
-    network.detector.model.pretrained: weights/original_models/bsds500_pascal_model.pth
+    network.detector.model.pretrained: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/rcf_bsds500_pascal_model.pth
     network.detector.runtime.wrappers: meanstd_pre:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.0,0.0,0.0],[1.0,1.0,1.0]],rgb2bgr_pre,meanstd_pre:[[0.0,0.0,0.0],[255.0,255.0,255.0]]:[[104.00698793,116.66876762,122.67891434],[1.0,1.0,1.0]]
     network.detector_frozen.model.architecture: rcf
-    network.detector_frozen.model.pretrained: weights/original_models/bsds500_pascal_model.pth
+    network.detector_frozen.model.pretrained: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/rcf_bsds500_pascal_model.pth
     network.detector_frozen.runtime.wrappers: meanstd_pre:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.0,0.0,0.0],[1.0,1.0,1.0]],rgb2bgr_pre,meanstd_pre:[[0.0,0.0,0.0],[255.0,255.0,255.0]]:[[104.00698793,116.66876762,122.67891434],[1.0,1.0,1.0]]
 
 all:

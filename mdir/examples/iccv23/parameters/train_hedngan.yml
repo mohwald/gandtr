@@ -23,7 +23,7 @@ network:
     path: null
     model:
       architecture: hed_interpolation
-      pretrained: /mnt/fry2/landmarkdb/models/pytorch/weights/hed/sniklaus_github.pth
+      pretrained: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hed_sniklaus_github.pth
     initialize: false
     runtime:
       wrappers: rgb2bgr_pre,meanstd_pre:[[0.5,0.5,0.5],[0.5,0.5,0.5]]:[[0.40787054,0.45752458,0.48109378],[1.0,1.0,1.0]]
@@ -35,7 +35,7 @@ network:
     path: null
     model:
       architecture: hed_interpolation
-      pretrained: /mnt/fry2/landmarkdb/models/pytorch/weights/hed/sniklaus_github.pth
+      pretrained: http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/hed_sniklaus_github.pth
     initialize: false
     runtime:
       frozen: true
