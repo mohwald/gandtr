@@ -18,6 +18,16 @@ This repository builds on top of image retrieval implemented in [mdir][mdir] and
 
 ## Pretrained models
 
+### Downloads
+
+#### Day-to-night generator models
+
+Original day             | CycleGAN night |  HED<sup>N</sup>GAN night
+:-------------------------:|:------------------------:|:-------------------------:
+![](https://github.com/user-attachments/assets/b8e31470-3eef-46e3-a023-586745568b8f) | ![](https://github.com/user-attachments/assets/db07a0d6-08ad-4ee4-9edf-bcaad6bfdd54) | ![](https://github.com/user-attachments/assets/0605465d-298b-403a-9e9b-d0e2d07533c4)
+
+[More examples](docs/outputs.md)
+
 <table>
   <thead>
     <tr>
@@ -36,6 +46,8 @@ This repository builds on top of image retrieval implemented in [mdir][mdir] and
     </tr>
   </tbody>
 </table>
+
+#### Embedding models
 
 <table>
   <thead>
