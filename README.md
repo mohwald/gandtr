@@ -1,6 +1,6 @@
 # GAN domain translation for recognition
 
-**[arXiv](https://arxiv.org/abs/2309.16351) | [Paper with supplementary](https://openaccess.thecvf.com/content/ICCV2023/html/Mohwald_Dark_Side_Augmentation_Generating_Diverse_Night_Examples_for_Metric_Learning_ICCV_2023_paper.html) | [Video (5m)](https://youtu.be/zlT-GJOcgYw)**
+**[arXiv](https://arxiv.org/abs/2309.16351) | [Paper](https://openaccess.thecvf.com/content/ICCV2023/html/Mohwald_Dark_Side_Augmentation_Generating_Diverse_Night_Examples_for_Metric_Learning_ICCV_2023_paper.html) | [Video (5m)](https://youtu.be/zlT-GJOcgYw) | [Poster](http://ptak.felk.cvut.cz/personal/jenicto2/download/iccv23_gan/poster.pdf)**
 
 ----
 
